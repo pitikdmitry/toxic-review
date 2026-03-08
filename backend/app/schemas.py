@@ -52,3 +52,54 @@ class ReviewListItem(BaseModel):
 
 class PublishRequest(BaseModel):
     comment_ids: list[int]
+
+
+# --- Feed schemas ---
+
+
+class DiffContextLine(BaseModel):
+    type: str
+    content: str
+    old_line_number: int | None = None
+    new_line_number: int | None = None
+
+
+class FeedItem(BaseModel):
+    id: int
+    body: str
+    severity: str
+    category: str
+    file_path: str
+    line_number: int
+    score: int
+    upvotes: int
+    downvotes: int
+    user_vote: int | None = None
+    created_at: datetime
+    diff_context: list[DiffContextLine]
+    review_id: int
+    pr_title: str
+    repo_owner: str
+    repo_name: str
+    pr_number: int
+    cringe_level: int
+
+
+class FeedResponse(BaseModel):
+    items: list[FeedItem]
+    total: int
+    page: int
+    page_size: int
+    has_more: bool
+
+
+class VoteRequest(BaseModel):
+    fingerprint: str
+    value: int
+
+
+class VoteResponse(BaseModel):
+    score: int
+    upvotes: int
+    downvotes: int
+    user_vote: int | None = None

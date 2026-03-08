@@ -43,6 +43,7 @@ async def create_review(req: ReviewRequest, db: AsyncSession = Depends(get_db)):
         pr_author=pr_info.get("user", {}).get("login", ""),
         summary=ai_review.get("summary", ""),
         diff_data=files,
+        cringe_level=req.cringe_level,
     )
     db.add(review)
     await db.flush()

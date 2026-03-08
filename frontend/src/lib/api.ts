@@ -1,10 +1,11 @@
-import type { Review, ReviewListItem } from "@/types";
+import type { FeedResponse, Review, ReviewListItem, VoteResponse } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
+    cache: "no-store",
     headers: { "Content-Type": "application/json", ...options?.headers },
   });
   if (!res.ok) {
@@ -39,5 +40,29 @@ export function publishComments(reviewId: number, commentIds: number[]) {
 export function deleteReview(id: number) {
   return request<{ deleted: boolean }>(`/api/reviews/${id}`, {
     method: "DELETE",
+  });
+}
+
+export function fetchFeed(
+  sort: string = "hot",
+  period: string = "all",
+  page: number = 1,
+  pageSize: number = 20,
+  fingerprint?: string,
+) {
+  const params = new URLSearchParams({
+    sort,
+    period,
+    page: page.toString(),
+    page_size: pageSize.toString(),
+  });
+  if (fingerprint) params.set("fingerprint", fingerprint);
+  return request<FeedResponse>(`/api/feed?${params}`);
+}
+
+export function voteComment(commentId: number, fingerprint: string, value: number) {
+  return request<VoteResponse>(`/api/feed/${commentId}/vote`, {
+    method: "POST",
+    body: JSON.stringify({ fingerprint, value }),
   });
 }

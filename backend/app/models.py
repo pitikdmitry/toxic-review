@@ -1,6 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    SmallInteger,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -19,6 +28,7 @@ class Review(Base):
     pr_author: Mapped[str] = mapped_column(String, default="")
     summary: Mapped[str] = mapped_column(Text, default="")
     diff_data: Mapped[list] = mapped_column(JSON, default=list)
+    cringe_level: Mapped[int] = mapped_column(SmallInteger, default=3)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     comments: Mapped[list["ReviewComment"]] = relationship(
@@ -40,6 +50,29 @@ class ReviewComment(Base):
     category: Mapped[str] = mapped_column(String, default="general")
     published: Mapped[bool] = mapped_column(Boolean, default=False)
     github_comment_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    score: Mapped[int] = mapped_column(Integer, default=0)
+    upvotes: Mapped[int] = mapped_column(Integer, default=0)
+    downvotes: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     review: Mapped["Review"] = relationship(back_populates="comments")
+    votes: Mapped[list["Vote"]] = relationship(
+        back_populates="comment", cascade="all, delete-orphan"
+    )
+
+
+class Vote(Base):
+    __tablename__ = "votes"
+    __table_args__ = (
+        UniqueConstraint("comment_id", "fingerprint", name="uq_vote_comment_fingerprint"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    comment_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("review_comments.id", ondelete="CASCADE"), nullable=False
+    )
+    fingerprint: Mapped[str] = mapped_column(String(64), nullable=False)
+    value: Mapped[int] = mapped_column(SmallInteger, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    comment: Mapped["ReviewComment"] = relationship(back_populates="votes")
