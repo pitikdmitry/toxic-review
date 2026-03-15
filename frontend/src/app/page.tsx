@@ -115,15 +115,15 @@ export default function HomePage() {
       <section className="mb-16 pt-8 text-center">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[var(--border-primary)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-medium text-[var(--accent)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-          AI-Powered Code Review
+          Toxic Code Review
         </div>
         <h1 className="mb-3 text-4xl font-bold tracking-tight">
-          Review PRs with{" "}
-          <span className="gradient-brand-text">intelligence</span>
+          Your PR is bad and you should{" "}
+          <span className="gradient-brand-text">feel bad</span>
         </h1>
         <p className="mb-8 text-[var(--text-secondary)] max-w-lg mx-auto">
-          Paste a GitHub Pull Request URL and get instant, actionable code
-          review feedback powered by AI.
+          Paste a GitHub PR and let our AI roast your code harder than
+          your tech lead ever could. Cringe levels 1–5, tears not included.
         </p>
         <div className="mx-auto max-w-xl">
           <PRInput />
