@@ -1,6 +1,6 @@
 ---
 name: db-queries
-description: Rules for writing efficient async SQLAlchemy queries in this project. Invoke when adding or modifying database queries, endpoints that read/write data, or optimizing slow queries.
+description: "Invoke when writing or modifying SQLAlchemy models, database queries, or ORM operations. Covers async session rules, query patterns, and relationship loading. Failure to invoke = incorrect code."
 ---
 
 # Efficient Database Queries

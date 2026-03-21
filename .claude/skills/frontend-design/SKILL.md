@@ -1,6 +1,6 @@
 ---
 name: frontend-design
-description: Design rules for building frontend UI. Invoke when creating or modifying React components, pages, layouts, or forms in the frontend (e.g. "add a modal", "build the settings page", "create a card component", "redesign the header", "add a form for X").
+description: "Invoke BEFORE writing any frontend code that touches: components, pages, layouts, forms, or styling. Contains spacing, color, card, badge, and animation rules."
 argument-hint: <component-or-page>
 ---
 

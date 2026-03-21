@@ -1,6 +1,6 @@
 ---
 name: crud
-description: Scaffold a CRUD resource with model, schemas, router, and tests. Invoke when the user asks to add a new database entity, resource, or endpoint group (e.g. "add tags", "create a bookmarks table", "I need CRUD for X").
+description: "Invoke when creating any new entity, resource, or endpoint group (e.g. 'add tags', 'create a bookmarks table', 'I need CRUD for X'). Generates model, schemas, router, and tests."
 argument-hint: <resource-name>
 ---
 
