@@ -33,6 +33,12 @@ const CRINGE_LABELS = [
   { label: "Unhinged", emoji: "🤯", color: "text-red-500", bg: "bg-red-500/8" },
 ];
 
+const PERSONA_LABELS: Record<string, { label: string; emoji: string }> = {
+  gordon_ramsay: { label: "Ramsay", emoji: "👨‍🍳" },
+  disappointed_dad: { label: "Dad", emoji: "👴" },
+  elon_musk: { label: "Elon", emoji: "🚀" },
+};
+
 function CringeIndicator({ level }: { level: number }) {
   const cringe = CRINGE_LABELS[level - 1] || CRINGE_LABELS[2];
   return (
@@ -138,6 +144,12 @@ export function CommentCard({ comment, onVote }: CommentCardProps) {
             </span>
           )}
           <CringeIndicator level={comment.cringe_level} />
+          {comment.persona && comment.persona !== "default" && PERSONA_LABELS[comment.persona] && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-[var(--bg-tertiary)] px-1.5 py-0.5 text-[10px] font-semibold text-[var(--text-secondary)]">
+              <span className="text-xs">{PERSONA_LABELS[comment.persona].emoji}</span>
+              {PERSONA_LABELS[comment.persona].label}
+            </span>
+          )}
           <span className="text-[11px] text-[var(--text-tertiary)] font-mono truncate ml-auto">
             {truncatePath(comment.file_path)}:{comment.line_number}
           </span>

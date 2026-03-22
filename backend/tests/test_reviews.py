@@ -153,6 +153,27 @@ async def test_delete_review(client):
 
 
 @pytest.mark.asyncio
+async def test_create_review_with_persona(client):
+    p1, p2, p3 = _patches()
+    with p1, p2, p3 as mock_review:
+        resp = await client.post(
+            "/api/reviews",
+            json={
+                "pr_url": "https://github.com/owner/repo/pull/1",
+                "cringe_level": 3,
+                "persona": "gordon_ramsay",
+            },
+        )
+        mock_review.assert_called_once()
+        _, kwargs = mock_review.call_args
+        assert kwargs["cringe_level"] == 3
+        assert kwargs["persona"] == "gordon_ramsay"
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["persona"] == "gordon_ramsay"
+
+
+@pytest.mark.asyncio
 async def test_publish_no_token(client):
     p1, p2, p3 = _patches()
     with p1, p2, p3:

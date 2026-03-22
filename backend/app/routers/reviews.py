@@ -30,7 +30,7 @@ async def create_review(req: ReviewRequest, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Failed to fetch PR data: {e}")
 
     try:
-        ai_review = await review_diff(files, cringe_level=req.cringe_level)
+        ai_review = await review_diff(files, cringe_level=req.cringe_level, persona=req.persona)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI review failed: {e}")
 
@@ -44,6 +44,7 @@ async def create_review(req: ReviewRequest, db: AsyncSession = Depends(get_db)):
         summary=ai_review.get("summary", ""),
         diff_data=files,
         cringe_level=req.cringe_level,
+        persona=req.persona,
     )
     db.add(review)
     await db.flush()

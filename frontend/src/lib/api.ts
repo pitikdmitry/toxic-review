@@ -15,10 +15,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-export function createReview(prUrl: string, cringeLevel: number = 3) {
+export function createReview(prUrl: string, cringeLevel: number = 3, persona: string = "default") {
   return request<Review>("/api/reviews", {
     method: "POST",
-    body: JSON.stringify({ pr_url: prUrl, cringe_level: cringeLevel }),
+    body: JSON.stringify({ pr_url: prUrl, cringe_level: cringeLevel, persona }),
   });
 }
 

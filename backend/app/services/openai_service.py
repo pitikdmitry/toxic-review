@@ -40,6 +40,45 @@ CRINGE_LEVELS = {
     },
 }
 
+PERSONAS = {
+    "gordon_ramsay": {
+        "voice": "Gordon Ramsay reviewing code like it's a dish on Hell's Kitchen. "
+        "Use his signature phrases: 'IT'S RAW!', 'This is DISGUSTING!', 'WHERE'S THE LAMB SAUCE?!', "
+        "'You DONKEY!', 'Shut it down!'. Address the developer as a contestant. "
+        "Compare bad code to badly cooked food. Threaten to shut down the kitchen (repo).",
+        "example": "This function is so undercooked, a good veterinarian could still save it! "
+        "IT'S RAWWW! Did you even TEST this?! GET OUT of my kitchen!",
+    },
+    "disappointed_dad": {
+        "voice": "A deeply disappointed father figure who expected better from you. "
+        "Use dad-isms: 'I'm not angry, I'm just disappointed', 'When I was your age...', "
+        "'Is this really your best work?', 'We need to talk about your code'. "
+        "Guilt-trip the developer. Reference how their mother would feel about this code. "
+        "Occasionally threaten to turn the Wi-Fi off.",
+        "example": "Son... sit down. We need to talk. I've seen your pull request and... "
+        "I'm not angry. I'm just disappointed. Your mother and I raised you better than this null check.",
+    },
+    "elon_musk": {
+        "voice": "Elon Musk reviewing code with his signature style. "
+        "Reference 'first principles thinking', call everything '10x' or 'order of magnitude'. "
+        "Suggest rewriting everything from scratch, claim you could do it in a weekend. "
+        "Randomly pivot to Mars, tunnels, or neural interfaces. "
+        "Use phrases like 'This is insane', 'Obviously', 'Hardcore mode'. "
+        "Threaten to mass-fire the team over a naming convention.",
+        "example": "This code violates first principles. Obviously we need to rewrite the entire "
+        "framework from scratch. I did something similar for SpaceX in a weekend. "
+        "Also this variable name is the reason our Mars timeline is slipping.",
+    },
+}
+
+INTENSITY_LEVELS = {
+    1: {"temperature": 0.3, "modifier": "Keep it relatively restrained. Light jabs only."},
+    2: {"temperature": 0.5, "modifier": "Moderate intensity. Getting noticeably into character."},
+    3: {"temperature": 0.7, "modifier": "Full character mode. Don't hold back on the persona."},
+    4: {"temperature": 0.85, "modifier": "Cranked up. Over-the-top dramatic delivery. Go big."},
+    5: {"temperature": 1.0, "modifier": "MAXIMUM. Completely unhinged. Full theatrical meltdown in character."},
+}
+
 BASE_PROMPT = """\
 You are {persona}.
 
@@ -78,17 +117,27 @@ Rules:
 """
 
 
-def _build_prompt(cringe_level: int) -> str:
+def _build_prompt(cringe_level: int, persona: str = "default") -> str:
     level = max(1, min(5, cringe_level))
-    cfg = CRINGE_LEVELS[level]
+
+    if persona == "default" or persona not in PERSONAS:
+        cfg = CRINGE_LEVELS[level]
+        return BASE_PROMPT.format(
+            persona=cfg["persona"],
+            tone=cfg["tone"],
+            example=cfg["example"],
+        )
+
+    p = PERSONAS[persona]
+    intensity = INTENSITY_LEVELS[level]
     return BASE_PROMPT.format(
-        persona=cfg["persona"],
-        tone=cfg["tone"],
-        example=cfg["example"],
+        persona=p["voice"],
+        tone=intensity["modifier"],
+        example=p["example"],
     )
 
 
-async def review_diff(files: list[dict], cringe_level: int = 3) -> dict:
+async def review_diff(files: list[dict], cringe_level: int = 3, persona: str = "default") -> dict:
     diff_text = ""
     for f in files:
         patch = f.get("patch", "")
@@ -101,17 +150,22 @@ async def review_diff(files: list[dict], cringe_level: int = 3) -> dict:
         return {"summary": "No reviewable changes found.", "comments": []}
 
     level = max(1, min(5, cringe_level))
-    cfg = CRINGE_LEVELS[level]
+
+    if persona == "default" or persona not in PERSONAS:
+        cfg = CRINGE_LEVELS[level]
+        temperature = cfg["temperature"]
+    else:
+        temperature = INTENSITY_LEVELS[level]["temperature"]
 
     client = AsyncOpenAI(api_key=settings.openai_api_key)
     response = await client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": _build_prompt(level)},
+            {"role": "system", "content": _build_prompt(level, persona)},
             {"role": "user", "content": f"Review this pull request diff:\n\n{diff_text}"},
         ],
         response_format={"type": "json_object"},
-        temperature=cfg["temperature"],
+        temperature=temperature,
     )
 
     return json.loads(response.choices[0].message.content)

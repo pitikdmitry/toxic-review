@@ -1,11 +1,14 @@
 from datetime import datetime
 
+from typing import Literal
+
 from pydantic import BaseModel
 
 
 class ReviewRequest(BaseModel):
     pr_url: str
     cringe_level: int = 3
+    persona: Literal["default", "gordon_ramsay", "disappointed_dad", "elon_musk"] = "default"
 
 
 class ReviewCommentOut(BaseModel):
@@ -30,6 +33,7 @@ class ReviewOut(BaseModel):
     pr_author: str
     summary: str
     diff_data: list
+    persona: str
     created_at: datetime
     comments: list[ReviewCommentOut]
 
@@ -83,6 +87,7 @@ class FeedItem(BaseModel):
     repo_name: str
     pr_number: int
     cringe_level: int
+    persona: str = "default"
 
 
 class FeedResponse(BaseModel):

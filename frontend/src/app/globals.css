@@ -158,6 +158,11 @@ body {
   height: 8px;
 }
 
+/* Pixel art rendering */
+.pixel-art {
+  image-rendering: pixelated;
+}
+
 /* Gradient utilities */
 .gradient-brand {
   background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 50%, #f97316 100%);

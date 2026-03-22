@@ -29,6 +29,7 @@ class Review(Base):
     summary: Mapped[str] = mapped_column(Text, default="")
     diff_data: Mapped[list] = mapped_column(JSON, default=list)
     cringe_level: Mapped[int] = mapped_column(SmallInteger, default=3)
+    persona: Mapped[str] = mapped_column(String(20), default="default")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     comments: Mapped[list["ReviewComment"]] = relationship(

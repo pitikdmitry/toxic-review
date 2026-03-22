@@ -87,6 +87,7 @@ async def get_feed(
             Review.pr_number,
             Review.diff_data,
             Review.cringe_level,
+            Review.persona,
         )
         .join(Review, ReviewComment.review_id == Review.id)
         .where(ReviewComment.id.in_(best_ids_subq))
@@ -144,6 +145,7 @@ async def get_feed(
         pr_number = row[4]
         diff_data = row[5]
         cringe_level = row[6]
+        persona = row[7]
 
         if comment.review_id not in diff_cache:
             diff_cache[comment.review_id] = diff_data or []
@@ -182,6 +184,7 @@ async def get_feed(
                 repo_name=repo_name,
                 pr_number=pr_number,
                 cringe_level=cringe_level,
+                persona=persona,
             )
         )
 

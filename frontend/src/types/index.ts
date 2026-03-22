@@ -18,6 +18,7 @@ export interface Review {
   pr_author: string;
   summary: string;
   diff_data: DiffFile[];
+  persona: string;
   created_at: string;
   comments: ReviewComment[];
 }
@@ -75,6 +76,7 @@ export interface FeedComment {
   repo_name: string;
   pr_number: number;
   cringe_level: number;
+  persona: string;
 }
 
 export interface FeedResponse {
